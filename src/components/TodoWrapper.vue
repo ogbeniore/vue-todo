@@ -17,8 +17,8 @@
       </div>
     </nav>
     <div class="m-2">
-      <TodoList :todos="list" @delete="deleteTodo" @edit="editTodo" />
 
+      <TodoList :todos="list" @delete="deleteTodo" @edit="editTodo" @sort="sortList" />
       <div class="p-4" v-show="!showForm">
         <b-button @click="showForm = true" block variant="primary">Add Todo</b-button>
       </div>
@@ -46,28 +46,7 @@ export default {
   data() {
     return {
       showForm: false,
-      list: [
-        {
-          id: 1,
-          title: "Wake Up",
-          isComplete: false
-        },
-        {
-          id: 2,
-          title: "Eat",
-          isComplete: false
-        },
-        {
-          id: 3,
-          title: "Code",
-          isComplete: false
-        },
-        {
-          id: 4,
-          title: "Rinse and Repeat",
-          isComplete: false
-        }
-      ],
+      list: [],
       currentTodo: {
         id: null,
         title: null,
@@ -75,14 +54,38 @@ export default {
       }
     }
   },
+  computed: {
+    highestId() {
+      let idArray = []
+      this.list.forEach(item => {
+        idArray.push(item.id)
+      })
+      return idArray.length ? Math.max(...idArray) : 0
+    }
+  },
+  mounted() {
+    const localList = localStorage.getItem('todolist')
+    if(localList) {
+      this.list = JSON.parse(localList)
+    } else {
+      alert('Error while fetching data')
+    }
+  },
+  watch: {
+    list: {
+      deep: true,
+      handler: function(value) {
+        localStorage.setItem('todolist',JSON.stringify(value))
+      } 
+    }
+  },
   methods: {
     addNewTodo(value) {
       const todoObject = {
-        id: this.list.length + 1,
+        id: this.highestId + 1,
         title: value,
         isComplete: false
       }
-
       this.list.push(todoObject)
     },
     deleteTodo(id) {
@@ -109,6 +112,15 @@ export default {
         title: null,
         isComplete: false
       }
+    },
+    sortList() {
+      this.list.sort(function(a,z) {
+        if(a.isComplete && !z.isComplete) {
+          return -1
+        } else {
+          return 1
+        }
+      })
     }
   }
 }
