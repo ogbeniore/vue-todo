@@ -17,18 +17,14 @@
       </div>
     </nav>
     <div class="m-2">
-      <TodoList :todos="list" @delete="deleteTodo" @edit="editTodo" />
+      <TodoList :todos="list" @delete="deleteTodo" @edit="editForm" />
 
-      <div class="p-4" v-show="!showForm">
+      <div class="p-4" v-if="!showForm">
         <b-button @click="showForm = true" block variant="primary">Add Todo</b-button>
       </div>
-       <br><br><br> 
-      <TodoForm 
-        :selected="currentTodo"
-        @addTodo="addNewTodo"
-        @updateTodo="updateTodo"
-        @closeForm="resetForm" 
-        v-show="showForm"/>
+
+      <TodoForm @addTodo="addNewTodo" @closeForm="showForm = false" v-else />
+      <EditForm :selected="currentTodo" v-show="showEditForm" @closeForm="showEditForm = false" @updateTodo="updateTodo" />
     </div>
   </div>
 </template>
@@ -36,16 +32,19 @@
 <script>
 import TodoList from './TodoList'
 import TodoForm from './TodoForm'
+import EditForm from './EditForm'
 
 export default {
   name: "TodoWrapper",
   components: {
     TodoList,
-    TodoForm
+    TodoForm,
+    EditForm
   },
   data() {
     return {
       showForm: false,
+      showEditForm: false,
       list: [
         {
           id: 1,
@@ -89,22 +88,14 @@ export default {
       let todoList = this.list.filter(item => item.id !== id)
       this.list = todoList
     },
-    editTodo(id) {
-      const selectedTodo = this.list.find(item => item.id === id)
+    editForm(id) {
+      let selectedTodo = this.list.find(item => item.id === id)
       this.currentTodo = selectedTodo
-      this.showForm = true
+      this.showEditForm = true
     },
-    updateTodo(value) {
-      let todo = {
-        ...this.currentTodo, title: value
-      }
-      let currentIndex = todo.id - 1
-      this.list.splice(currentIndex, 1, todo)
-      this.resetForm()
-    },
-    resetForm() {
-      this.showForm = false
-      this.currentTodo = {
+    updateTodo() {
+      this.showEditForm = false
+      this.currentTodo =  {
         id: null,
         title: null,
         isComplete: false

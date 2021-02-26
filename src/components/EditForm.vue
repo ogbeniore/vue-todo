@@ -1,10 +1,11 @@
 <template>
   <div class="card p-4 text-left">
-    <form action="" @submit.prevent="addTodo">
+    <form action="" @submit.prevent="updateTodo">
+      <h2>Edit Todo</h2>
       <div class="mb-3">
         <label for="todo" class="form-label">Todo title</label>
         <input
-          v-model="title"
+          v-model="selected.title"
           type="text"
           class="form-control"
           id="todo"
@@ -16,9 +17,9 @@
           class="btn btn-outline-primary"
           variant="outline-primary" 
           type="submit"
-          :disabled="!title"
+          :disabled="!selected.title"
           >
-          Add Todo
+          Edit Todo
         </button>
         <button class="btn" variant="danger" type="button" @click="$emit('closeForm')">Cancel</button>
       </div>
@@ -28,16 +29,16 @@
 
 <script>
 export default {
-  name: 'TodoForm',
-  data() {
-    return {
-      title: ''
+  name: 'EditForm',
+  props: {
+    selected: {
+      type: Object,
+      required: true
     }
   },
   methods: {
-    addTodo() {
-      this.$emit('addTodo', this.title)
-      this.title = ''
+    updateTodo() {
+      this.$emit('updateTodo')
     }
   }
 }

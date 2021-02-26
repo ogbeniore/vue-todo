@@ -6,7 +6,7 @@
         {{todo.title}}
       </div>
       <div class="">
-        <b-button @click="$emit('edit', todo.id)" variant="succes" class="mr-2">Edit</b-button>
+        <b-button @click="$emit('edit', todo.id)" variant="success" class="mr-2">Edit</b-button>
         <b-button @click="$emit('delete', todo.id)" variant="danger">Delete</b-button>
       </div>
     </li>
